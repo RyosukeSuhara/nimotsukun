@@ -8,10 +8,21 @@ const char gStageData[] = "\
 # oo   #\n\
 #      #\n\
 ########";
-int gStageWidth = 8;
-int gStageHeight = 5;
-const char font[] = { ' ', '#', '.', 'o', 'O', 'p', 'P' }; //表示するものを配列にまとめている
+const int gStageWidth = 8;
+const int gStageHeight = 5;
 
+enum OBJECT {
+	 OBJ_SPACE,
+	 OBJ_WALL,
+	 OBJ_GOAL,
+	 OBJ_BLOCK,
+	 OBJ_BLOCK_ON_GOAL,
+	 OBJ_MAN,
+	 OBJ_MAN_ON_GOAL,
+	 OBJ_UNKNOWN 
+};
+
+/*
 #define OBJ_SPACE 0
 #define OBJ_WALL 1
 #define OBJ_GOAL 2
@@ -20,6 +31,7 @@ const char font[] = { ' ', '#', '.', 'o', 'O', 'p', 'P' }; //表示するもの�
 #define OBJ_MAN 5
 #define OBJ_MAN_ON_GOAL 6
 #define OBJ_UNKNOWN 7
+*/
 
 
 //関数プロトタイプ
@@ -70,7 +82,7 @@ void initialize(int* state, int width, int /* height */, const char* stageData) 
 	int x = 0;
 	int y = 0;
 	while (*d != '\0') { //ステージの形状が終端にたどりつかない限りオブジェクトを配置し続ける
-		int t; //オブジェクトの種類を入れておく変数
+		OBJECT t; //オブジェクトの種類を入れておく変数
 		switch (*d) {
 		case '#': t = OBJ_WALL; break;
 		case ' ': t = OBJ_SPACE; break;
@@ -91,6 +103,7 @@ void initialize(int* state, int width, int /* height */, const char* stageData) 
 }
 
 void draw(const int* state, int width, int height) {
+	const char font[] = { ' ', '#', '.', 'o', 'O', 'p', 'P' }; //表示するものを配列にまとめている
 	for (int y = 0; y < height; ++y) {
 		for (int x = 0; x < width; ++x) {
 			int o = state[y * width + x];
@@ -101,7 +114,7 @@ void draw(const int* state, int width, int height) {
 }
 
 //
-//
+//オブジェクトの移動処理
 void update(int* s, char input, int w, int h) {
 	//動く方向を指定する変数を用意する
 	int dx = 0;
@@ -115,10 +128,7 @@ void update(int* s, char input, int w, int h) {
 	//人座標を検索
 	int i = -1;
 	for (i = 0; i < w * h; ++i) {
-		if (s[i] == OBJ_MAN) {
-			break;
-		}
-		if ( s[i] == OBJ_MAN_ON_GOAL) {
+		if (s[i] == OBJ_MAN	|| s[i] == OBJ_MAN_ON_GOAL) {
 			break;
 		}
 	}
